@@ -1,0 +1,16 @@
+export enum UnitOfMeasure {
+  invalid = -1,
+  bundle = 0,
+  case = 1,
+  count = 2,
+  each = 3,
+  length = 4,
+  lf = 5,
+  msf = 6,
+  msheet = 7,
+  msi = 8,
+  mwrap = 9,
+  pounds = 10,
+  roll = 11,
+  wrap = 12,
+}

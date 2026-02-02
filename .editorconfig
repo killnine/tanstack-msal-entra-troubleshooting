@@ -1,0 +1,12 @@
+﻿[*.cs]
+
+# SA1600: Elements should be documented
+dotnet_diagnostic.SA1600.severity = none
+dotnet_diagnostic.SA1602.severity = none
+dotnet_diagnostic.SA1101.severity = none
+dotnet_diagnostic.SA1633.severity = none
+dotnet_diagnostic.SA1309.severity = none
+dotnet_diagnostic.SA0001.severity = none
+dotnet_diagnostic.SA1200.severity = none
+dotnet_diagnostic.SA1402.severity = none
+dotnet_diagnostic.SA1310.severity = none
