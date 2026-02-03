@@ -51,3 +51,20 @@ Note that in this scenario, the user will receive an error page despite being au
   ```powershell
   dotnet run --project src\_aspire\AppHost\AppHost.csproj
   ```
+
+## My Theories
+
+### Race Condition on Auth Initialization
+  
+  ** Timeline **
+  - The `/_auth/jackets/$jacketId.tsx` route's `beforeLoad` is executing before the auth-provider has completed initialization.
+  - This means that the `user` object is still null when the authorization check is being performed.
+  - This means that that `hasPermission()` call will return false and immeidately redirect the user
+
+  ** Questions **
+  - The `/_auth/route.tsx` has a guard within its `beforeLoad` that checks for `isInitialized` and manually hydrates the account data
+  - This logic should execute before any child routes begin executing, preventing missing data further down
+
+## Other Notes
+
+I'm not very familiar with React or TanStack Router. I'd appreciate any other guidance or suggestions on making a robust authz flow for this application. Thank you!
