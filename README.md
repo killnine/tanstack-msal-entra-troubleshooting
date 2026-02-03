@@ -14,7 +14,7 @@ This means that checks against the user's authorization fail when directly navig
   2. Navigate to the home page and sign in
      - Username: `john.doe@derekdoes.onmicrosoft.com`
      - TAP: `<see discord post>` 
-     ![Login](docs/01_login.png)
+    ![Login](docs/01_login.png)
   3. Click on `Go to Jacket` button to navigate to a new protected route
      ![Homepage](docs/02_main_page.png)
   4. View the Jacket and Refresh the page (It should load correctly)
