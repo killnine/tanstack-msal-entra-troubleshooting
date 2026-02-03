@@ -9,13 +9,18 @@ This means that checks against the user's authorization fail when directly navig
 
 ## Reproducing the Issue
 
-  1. Startup the Aspire App Host project 
+  1. Startup the Aspire App Host project
+    ![Aspire Dashboard](docs/00_aspire.png)
   2. Navigate to the home page and sign in
      - Username: `john.doe@derekdoes.onmicrosoft.com`
-     - Password: `<see discord post>` 
+     - TAP: `<see discord post>` 
+     ![Login](docs/01_login.png)
   3. Click on `Go to Jacket` button to navigate to a new protected route
-  4. Refresh the page
-  5. Open a new browser tab and navigate directly to a protected path: [http://localhost:{port}/jackets/1](http://localhost:{port}/jackets/1)
+     ![Homepage](docs/02_main_page.png)
+  4. View the Jacket and Refresh the page (It should load correctly)
+     ![Jacket](docs/03_jacket.png)
+  5. Open a new browser tab and navigate directly to a protected path: [http://localhost:5173/jackets/1](http://localhost:5173/jackets/1)
+     ![Error](docs/04_access_denied.png)
 
 Note that in this scenario, the user will receive an error page despite being authenticated in another tab. MSAL is not trying to silently authenticate.
 
@@ -30,7 +35,7 @@ Note that in this scenario, the user will receive an error page despite being au
   $domain = "derekdoes.onmicrosoft.com"
   $tenantId = "03cd471f-23fb-4e17-86a1-5fbfc84f9231"
   $clientId = "4d97f8f8-3b4f-41d0-9817-b74c24578207"
-  $clientSecret = "<see discort post>"
+  $clientSecret = "<see discord post>"
   $authority = "https://login.microsoftonline.com/$tenantId"
   
   dotnet user-secrets set "AzureAd:Domain" $domain --project src\Api\Api.csproj
