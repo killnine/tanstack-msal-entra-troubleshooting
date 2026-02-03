@@ -1,4 +1,11 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { EventType, PublicClientApplication } from '@azure/msal-browser'
 import { MsalProvider } from '@azure/msal-react'
 import { msalConfig } from '../integrations/microsoft-auth/msal-config.ts'
@@ -19,7 +26,7 @@ interface AuthContextType {
   hasAnyRole: (roles: string[]) => boolean
   hasPermission: (permission: string) => boolean
   hasAnyPermission: (permissions: string[]) => boolean
-  updateCurrentAccount: () => void
+  updateCurrentAccount: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -75,19 +82,32 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   )
 
   const updateCurrentAccount = useCallback(async () => {
+    console.log('[AuthProvider] updateCurrentAccount called')
     const account = authService.getCurrentAccount()
     setCurrentAccount(account)
 
     if (account) {
-      const user = await userService.getUser()
-      setCurrentUser(user)
+      try {
+        console.log(
+          '[AuthProvider] Fetching user data for account:',
+          account.username,
+        )
+        const user = await userService.getUser()
+        console.log('[AuthProvider] User data loaded:', user)
+        setCurrentUser(user)
+      } catch (error) {
+        console.error('[AuthProvider] Failed to fetch user data:', error)
+        setCurrentUser(null)
+      }
     } else {
+      console.log('[AuthProvider] No account found')
       setCurrentUser(null)
     }
   }, [authService])
 
   useEffect(() => {
     const callbackId = msalInstance.addEventCallback((event) => {
+      console.log('[AuthProvider] MSAL Event:', event.eventType)
       if (
         event.eventType === EventType.LOGIN_SUCCESS ||
         event.eventType === EventType.LOGOUT_SUCCESS ||
@@ -105,16 +125,37 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   }, [msalInstance, updateCurrentAccount])
 
   useEffect(() => {
+    let mounted = true
+
     const initialize = async () => {
-      await msalInstance.initialize()
-      setApiAuthService(authService)
-      await updateCurrentAccount()
-      setIsInitialized(true)
+      try {
+        console.log('[AuthProvider] Starting initialization')
+        await msalInstance.initialize()
+        console.log('[AuthProvider] MSAL initialized')
+
+        await msalInstance.handleRedirectPromise()
+        console.log('[AuthProvider] Redirect promise handled')
+
+        setApiAuthService(authService)
+
+        await updateCurrentAccount()
+
+        if (mounted) {
+          console.log('[AuthProvider] Initialization complete')
+          setIsInitialized(true)
+        }
+      } catch (error) {
+        console.error('[AuthProvider] Initialization error:', error)
+        if (mounted) {
+          setIsInitialized(true) // Set true even on error so app doesn't hang
+        }
+      }
     }
 
     void initialize()
 
     return () => {
+      mounted = false
       setApiAuthService(null)
     }
   }, [])

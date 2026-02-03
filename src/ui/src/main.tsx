@@ -8,12 +8,11 @@ import * as TanStackQueryProvider from '@/integrations/tanstack-query/root-provi
 import AuthProvider, { useAuth } from '@/contexts/auth-context.tsx'
 import { AuthInitializingLoader } from '@/components/auth/auth-initializing-loader.tsx'
 
-// Create a new router instance
 const router = createRouter({
   routeTree,
   context: {
     ...TanStackQueryProvider.getContext(),
-    auth: undefined!, // NOTE: Set within RouterProvider
+    auth: undefined!,
   },
   defaultPreload: 'intent',
   scrollRestoration: true,
@@ -21,7 +20,6 @@ const router = createRouter({
   defaultPreloadStaleTime: 0,
 })
 
-// Register the router instance for type safety
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router
@@ -43,8 +41,11 @@ export default function AppContent() {
   } = useAuth()
 
   if (!isInitialized) {
+    console.log('[AppContent] Waiting for auth initialization')
     return <AuthInitializingLoader />
   }
+
+  console.log('[AppContent] Auth initialized, rendering router')
 
   return (
     <RouterProvider
@@ -72,20 +73,18 @@ function App() {
   return (
     <AuthProvider>
       <TanStackQueryProvider.Provider>
-          <AppContent />
+        <AppContent />
       </TanStackQueryProvider.Provider>
     </AuthProvider>
   )
 }
 
-const rootElement = document.getElementById('app')
-if (rootElement && !rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement)
-  root.render(
-    <StrictMode>
-      <App />
-    </StrictMode>,
-  )
-}
+const rootElement = document.getElementById('app')!
+const root = ReactDOM.createRoot(rootElement)
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
 
 reportWebVitals()

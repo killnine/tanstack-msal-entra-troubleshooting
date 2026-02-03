@@ -6,12 +6,6 @@ import { AuthInitializingLoader } from '@/components/auth/auth-initializing-load
 import { AuthFailed } from '@/components/auth/auth-failed.tsx'
 
 export const Route = createFileRoute('/_auth')({
-  beforeLoad: async ({ context }) => {
-    // Wait for auth to hydrate if needed
-    if (!context.auth.isInitialized) {
-      await context.auth.updateCurrentAccount() // or expose a dedicated hydrate method
-    }
-  },
   component: RouteWrapper,
 })
 
